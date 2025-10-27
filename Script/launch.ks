@@ -2,8 +2,8 @@ function LaunchProgram{
     declare parameter desiredInc to 0.
     declare parameter desiredLAN to 0.
     declare parameter launchTowardsEquator to 0.
-    declare parameter pitchOverSpeed to 900.
-    declare parameter targetAltitude to 80.
+    declare parameter pitchOverSpeed to 1300.
+    declare parameter targetAltitude to 100.
     declare parameter pitchOverModifer to 1.5.
 
     set config:ipu to 2000.
@@ -22,13 +22,11 @@ function LaunchProgram{
 function Launch{
     declare parameter desiredInc to 0.
     declare parameter desiredLAN to 0.
-    declare parameter pitchOverSpeed to 900.
+    declare parameter pitchOverSpeed to 1300.
     declare parameter targetAltitude to 100.
     declare parameter pitchOverModifer to 1.5.    
 
     addAlarm("Raw",time:seconds + Body("Moon"):orbit:period , "Next Possible Launch","").
-
-    
 
     set targetAltitude to targetAltitude * 1000.
     local throttleControl to 1.
@@ -40,9 +38,6 @@ function Launch{
     stage.
     clearScreen.
     wait 1.
-    print "Energy: " + (body:mu /(2 * ship:orbit:semimajoraxis)) at (0,15).
-
-    local startEnergy to (body:mu /(2 * ship:orbit:semimajoraxis)).
 
     print "Flying program: " + pitchOverSpeed + ":" + pitchOverModifer.
 
@@ -77,13 +72,7 @@ function Launch{
         print "distanceToTargetPlane: " + distanceToTargetPlane at (0,2).
         print "velocityToTargetPlane: " + velocityToTargetPlane at (0,3).
         print "targetAccerlationToTargetPlane: " + targetAccerlationToTargetPlane at (0,4).
-
-        print "deltaV: " + stage:deltaV:vacuum at (0,14). 
-        print "Energy: " + (startEnergy - body:mu /(2 * ship:orbit:semimajoraxis)) at (0,15).
-
-        if(Staging()){
-            print "Stage Energy: " + (startEnergy - body:mu /(2 * ship:orbit:semimajoraxis)) at (0,16).
-        }
+        Staging().
         if(stage:number = 0 AND GetActiveEngineCount() = 0){return.}
         wait 0.
     }.
@@ -121,7 +110,7 @@ function GetTimeTillLaunch{
     declare parameter desiredInc to 90.0.
     declare parameter desiredLAN to 00.
     declare parameter launchTowardsEquator to 0.
-    declare parameter leadTime to 60.
+    declare parameter leadTime to 115.
      // -1 is away, 0 is launch at nearest time 1 is launch towards equator
     local earthRotationPeriod to ship:body:rotationperiod.
     local shipVectors to GetShipVectors().
@@ -180,6 +169,6 @@ function GetTimeTillLaunch{
         }
     }
     local timeTillLaunch to finalLaunchPointAngle * earthRotationPeriod / 360.
-    addAlarm("Raw",timeTillLaunch + time:seconds - leadTime, "LaunchWindow","").
+    addAlarm("Raw",timeTillLaunch + time:seconds - leadTime - 5, "LaunchWindow","").
     return timeTillLaunch - leadTime.
 }

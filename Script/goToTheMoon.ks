@@ -67,10 +67,10 @@ function TargetMoonSOIChange{
         print "desiredHy: " + desiredHy.
         print "H: " + moonOrbitMomentum:mag.
 
-    // if(abs(desiredHy/ moonOrbitMomentum:y) < 1){
-    //     print arccos(desiredHy/ -moonOrbitMomentum:y).
-    //     set normalAngle to arccos(desiredHy/ moonOrbitMomentum:y).
-    // }
+    if(abs(desiredHy/ moonOrbitMomentum:y) < 1){
+        print arccos(desiredHy/ -moonOrbitMomentum:y).
+        set normalAngle to arccos(desiredHy/ moonOrbitMomentum:y).
+    }
         
     }
 
@@ -110,15 +110,15 @@ local function GetMoonSOIChangePoint{
     local moonAngularMomentum to GetSpecificAngularMomentum(moonVectors).
     local rotatedMoonVelocityVector to vxcl(moonAngularMomentum,
         RotationFormula(radialAngle, moonVectors["Velocity"]:normalized, moonAngularMomentum)).
-    //clearVecDraws().
-    //drawVector(body("Moon"):position, ((rotatedMoonVelocityVector:normalized * body("Moon"):soiradius)),"", red).
+clearVecDraws().
+    drawVector(body("Moon"):position, ((rotatedMoonVelocityVector:normalized * body("Moon"):soiradius)),"", red).
 
     local moonOrthongonalVector to vcrs(moonAngularMomentum, moonVectors["Velocity"]):normalized.
 
     set rotatedMoonVelocityVector to RotationFormula(-normalAngle, rotatedMoonVelocityVector, moonVectors["Velocity"]).
 
     
-    //drawVector(body("Moon"):position, ((rotatedMoonVelocityVector:normalized * body("Moon"):soiradius)),"",grey).
+    drawVector(body("Moon"):position, ((rotatedMoonVelocityVector:normalized * body("Moon"):soiradius)),"",grey).
     
 
     return (moonVectors["Position"] + (rotatedMoonVelocityVector:normalized * body("Moon"):soiradius)). //rsVec

@@ -21,8 +21,6 @@ function Staging{
 	}.
 
 	if shouldStage = 1 or engineCount = 0 {
-
-		
 		stage.
 		return true.
 	}.

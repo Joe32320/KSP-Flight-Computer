@@ -1,7 +1,7 @@
 function LaunchToMoonIntercept{
     declare parameter finalOrbitHeight to 30000.
     declare parameter launchTowardsEquator to 0.
-    declare parameter pitchOverSpeed to 900.
+    declare parameter pitchOverSpeed to 1275.
 
     LaunchIntoMoonPlane(launchTowardsEquator, pitchOverSpeed).
     wait 5.
@@ -13,7 +13,7 @@ function LaunchToMoonIntercept{
 function LaunchToMoonOrbit{
     declare parameter finalOrbitHeight to 30000.
     declare parameter launchTowardsEquator to 0.
-    declare parameter pitchOverSpeed to 900.
+    declare parameter pitchOverSpeed to 1100.
 
     LaunchToMoonIntercept(finalOrbitHeight, launchTowardsEquator, pitchOverSpeed).
     wait until ship:body:name = "Moon".
@@ -26,7 +26,7 @@ function LaunchToMoonOrbit{
 function LaunchIntoMoonPlane {
     declare parameter launchTowardsEquator to 0.
     declare parameter pitchOverSpeed to 1100.
-    declare parameter targetAlt to 80.
+    declare parameter targetAlt to 100.
 
     local moonVectors to GetTargetVectors(Body("Moon")).
     local moonLongitudeOfAscendingNode to GetLongitudeOfAscendingNode(moonVectors).

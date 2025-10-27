@@ -10,6 +10,11 @@ function RunLowEarthAtmoScience {
      }
 }.
 
+function RunScience{
+    declare parameter shouldTransmit.
+    DeployAllScience(shouldTransmit).
+}.
+
 function RunHighEarthAtmoScience{
     declare parameter shouldTransmit.
     WHEN ship:altitude > 32000 then { DeployAllScience(shouldTransmit). }
@@ -17,7 +22,7 @@ function RunHighEarthAtmoScience{
 
 function RunLowEarthOrbitScience{
     declare parameter shouldTransmit.
-    WHEN ship:altitude > 71000 then {DeployAllScience(shouldTransmit).}
+    WHEN ship:altitude > 90000 then {DeployAllScience(shouldTransmit).}
 }
 
 function RunHighEarthOrbitScience{
