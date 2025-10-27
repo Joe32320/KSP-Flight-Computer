@@ -10,6 +10,14 @@ function UnsignedModular{
     return c.
 }
 
+function Lerp{
+    declare parameter minValue.
+    declare parameter maxValue.
+    declare parameter t.
+
+    return (1 - t) * minValue + t * maxValue.
+}
+
 //Vanilla Bisection Search
 function SimpleBisectionSearch{
     declare parameter func.
@@ -33,9 +41,11 @@ function ModifiedBisectionSearch {
     local minValue to results["minValue"].
     local maxValue to results["maxValue"].
 
-    local gradient to (maxValue - minValue) / (results["maxPoint"] - results["minPoint"]).
-    if (gradient = 0) {return results["minPoint"]. }.
-    return results["minPoint"] - minValue/gradient.
+    // local gradient to (maxValue - minValue) / (results["maxPoint"] - results["minPoint"]).
+    // if (gradient = 0) {return results["minPoint"]. }.
+    
+    local t to -minValue / (maxValue - minValue).
+    return Lerp(results["minPoint"], results["maxPoint"], t).
 }
 
 
@@ -60,7 +70,7 @@ local function BisectionSearch{
         local midValue to func:call(midPoint).
         
         if(midValue = 0 OR (maxPoint - minPoint)/2 < tolerance){
-             print "BisectionSearch Iteration count: " + iterationCount.
+            // print "BisectionSearch Iteration count: " + iterationCount.
             // //return midPoint. 
             // print "Tolerance: " + ((maxPoint - minPoint)/2).
             // print "MidValue: " + midValue.
@@ -80,89 +90,6 @@ local function BisectionSearch{
     }
     print "Could not find solution within given tolerance".
     return 1/0.
-}
-
-function SimpleBisectionRegulaFalsiCombinedSearch{
-    declare parameter func.
-    declare parameter minPoint.
-    declare parameter maxPoint.
-    declare parameter tolerance to 0.001.
-    declare parameter maxIterations to 1000.
-
-    local results to BisectionRegulaFalsiCombinedSearch(func, minPoint, maxPoint, tolerance, maxIterations).
-    print results.
-
-    return choose results["midPoint"] if abs(results["midValue"]) < abs(results["falseValue"]) else results["falsePoint"].
-}
-
-local function BisectionRegulaFalsiCombinedSearch{
-    declare parameter func.
-    declare parameter minPoint.
-    declare parameter maxPoint.
-    declare parameter tolerance to 0.001.
-    declare parameter maxIterations to 1000.
-
-    local iterationCount to 0.
-    local minValue to func:call(minPoint).
-    local maxValue to func:call(maxPoint).
-
-    if(minValue * maxValue > 0){
-        print "minValue and maxValue have the same sign" + minValue + " : " + maxValue.
-        return 1/0.
-    }
-
-    until iterationCount > maxIterations {
-        local falsePoint to (minPoint * maxValue - maxPoint * minValue) / (maxValue - minValue).// (minPoint + maxPoint) / 2.
-        local falseValue to func:call(falsePoint).
-
-        local midPoint to (minPoint + maxPoint) / 2.
-        local midValue to func:call(midPoint).
-
-        if(falseValue = 0 OR midValue = 0 OR (maxPoint - minPoint)/2 < tolerance){
-             print "BisectionRegulaFalsiCombinedSearch Iteration count: " + iterationCount.
-            // print "Tolerance: " + ((maxPoint - minPoint)/2).
-            // print "MidValue: " + midValue.
-            return lexicon("minPoint", minPoint, "falsePoint", falsePoint, "maxPoint", maxPoint,
-                "minValue", minValue, "falseValue", falseValue, "maxValue", maxValue, "midPoint", midPoint, "midValue", midValue).
-        }
-
-        // If midValue and false value have different signs, use both points as new bracket points
-        if(midValue/falseValue < 0){
-            print 1.
-            set minPoint to choose midPoint if midPoint - falsePoint < 0 else falsePoint.
-            set minValue to choose midValue if midPoint - falsePoint < 0 else falseValue.
-            set maxPoint to choose midPoint if midPoint - falsePoint > 0 else falsePoint.
-            set maxValue to choose midValue if midPoint - falsePoint > 0 else falseValue.
-        }     
-        // If above is not true then both midValue and false value have the same sign so we only need to test for one
-        // in order to change one of the brackets  
-        else if(NOT minValue = 0 AND midValue/minValue > 0){
-            print 2.
-            //Check which is nearer to the root
-            if(abs(midValue) < abs(falseValue)){
-                set minPoint to midPoint.
-                set minValue to minValue.
-            }
-            else{
-                set minPoint to falsePoint.
-                set minValue to falseValue.
-            }
-        }
-        else{
-            print 3.
-            if(abs(midValue) < abs(falseValue)){
-                set maxPoint to midPoint.
-                set maxValue to minValue.
-            }
-            else{
-                set maxPoint to falsePoint.
-                set maxValue to falseValue.
-            }
-        }
-        
-        set iterationCount to iterationCount + 1.
-    }
-    return "Could not find solution within given tolerance".
 }
 
 //Vanilla RegulaFalsi Search
@@ -214,20 +141,20 @@ local function RegulaFalsiSearch{
         local midPoint to (minPoint * maxValue - maxPoint * minValue) / (maxValue - minValue).// (minPoint + maxPoint) / 2.
         local midValue to func:call(midPoint).
         if(midValue = 0 OR (maxPoint - minPoint)/2 < tolerance){
-            print "RegulaFalsiSearch Iteration count: " + iterationCount.
+            // print "RegulaFalsiSearch Iteration count: " + iterationCount.
             // print "Tolerance: " + ((maxPoint - minPoint)/2).
             // print "MidValue: " + midValue.
             return lexicon("minPoint", minPoint, "midPoint", midPoint, "maxPoint", maxPoint,
                 "minValue", minValue, "midValue", midValue, "maxValue", maxValue).
         }
 
-        // local minRatio to 0.
-        // if(minValue = 0){
-        //     set minRatio to midValue/GetMaxDoubleValue().
-        // }
-        // else{
+        local minRatio to 0.
+        if(minValue = 0){
+            set minRatio to midValue/GetMaxDoubleValue().
+        }
+        else{
             set minRatio to midValue/minValue.
-        // }
+        }
         
         
         if(NOT minValue = 0 AND minRatio > 0){
@@ -446,7 +373,7 @@ function FindZeroValues{
         local currentPoint to minPoint + stepSize * iterationCount.
         local currentValue to func:call(currentPoint).
 
-        log currentPoint + "," + currentValue to "logs.csv".
+        //log currentPoint + "," + currentValue to "logs.csv".
 
         //signs have flipped
         if(currentValue / previousValue < 0){

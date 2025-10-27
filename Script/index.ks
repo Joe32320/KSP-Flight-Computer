@@ -5,7 +5,6 @@ run engine.
 run draw.
 run navigation.
 run manoeuvre.
-run mathematics.
 run runNode.
 run launch.
 run maths.
@@ -18,6 +17,7 @@ run fairings.
 run goToTheMoon.
 run docking.
 run toThePlanets.
-run aeroplane.
+//run launchTest.
+run sounding.
 // run rocketProfiler.
 // run utilities.

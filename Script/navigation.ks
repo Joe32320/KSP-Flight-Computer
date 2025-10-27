@@ -333,9 +333,11 @@ function GetEccentricAnomalyFromMeanAnomaly{
 	}
 
 	if(meanAnomaly > 180){
-		return SimpleRegulaFalsiSearch(searchFunc@, 180, 360, 0.000000001).
+		//print SimpleBisectionSearch(searchFunc@, 180, 360, 0.000000001).
+		return ModifiedBisectionSearch(searchFunc@, 180, 360, 0.000000001).
 	}
-	return SimpleRegulaFalsiSearch(searchFunc@, 0, 180, 0.000000001).
+	//print SimpleBisectionSearch(searchFunc@, 0, 180, 0.000000001).
+	return ModifiedBisectionSearch(searchFunc@, 0, 180, 0.000000001).
 }
 
 function GetTrueAnomalyFromEccentricAnomaly {
@@ -518,62 +520,4 @@ function GetTrueAnomalyOfClosestApproachToTarget{
 	}
 	local timeOfClosestApproach to SimpleGoldenSectionSearch(searchFunction@, startTimeOfSearch, maxTimeOfSearch, 0.01).
 	return GetTrueAnomalyAfterTime(timeOfClosestApproach, sourceVectors).
-}
-
-function GetEccentricityFromTwoRadiiAndTrueAnomalies{
-	declare parameter r1.
-	declare parameter theta1.
-	declare parameter r2. 
-	declare parameter theta2.
-
-	return (r2 - r1) / (r1*cos(theta1) - r2 * cos(theta2)).
-}
-
-function GetSemiLactusRectumFromRadiusEccentricityAndTrueAnomaly{
-	declare parameter radius.
-	declare parameter eccentricity.
-	declare parameter trueAnomaly.
-
-	return radius * (1 + eccentricity * cos(trueAnomaly)).
-}
-
-function GetSemiMajorAxisFromSemiLactusRectumAndEccentricity{
-	declare parameter semiLactusRectum.
-	declare parameter eccentricity.
-
-	return semiLactusRectum / ( 1 - eccentricity ^ 2).
-}
-
-function GetVelocityVectorFromTwoRadiiAndTrueAnomalies{
-	declare parameter r1Vec.
-	declare parameter theta1.
-	declare parameter r2Vec. 
-	declare parameter theta2.
-	declare parameter orbitBody to body.
-
-	local r1 to r1Vec.
-	local r2 to r2Vec.
-	local mu to orbitBody:mu.
-	local e to GetEccentricityFromTwoRadiiAndTrueAnomalies(r1, theta1, r2, theta2).
-	local p to GetSemiLactusRectumFromRadiusEccentricityAndTrueAnomaly(r1, e, theta1).
-	local a to GetSemiMajorAxisFromSemiLactusRectumAndEccentricity(p, e).
-
-	local v1 to sqrt(mu * ((2 / r1)-(1 / a))).
-	local v2 to sqrt(mu * ((2 / r2)-(1 / a))).
-
-	// Flight path angles
-	local phi1 to arcTan(e * sin(theta1)/(1 + e * cos(theta1))).
-	local phi2 to arcTan(e * sin(theta2)/(1 + e * cos(theta2))).
-
-	local h1 to r1 * v1 * cos(phi1).
-	local h2 to r2 * v2 * cos(phi2). //Should be the same as above.
-
-	print "hDiff: " + (h2 - h1).
-
-	local hVec to vcrs(r1Vec, r2Vec):normalized * h1.
-
-	local localHorizonVector to vCrs(hVec, r1Vec):normalized.
-
-	return RotationFormula(-phi1,localHorizonVector, hVec) * v1.
-
 }
